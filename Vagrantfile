@@ -1,9 +1,10 @@
 Vagrant.configure("2") do |config|
     
-    config.vm.define "db" do |db|
+	config.vm.define "db" do |db|
 		db.vm.box = "ubuntu/trusty64"
 		db.vm.network "forwarded_port", guest: 5432, host: 5432
 		db.vm.network "private_network", ip: "192.168.1.11"
+		db.vm.synced_folder ".", "/vagrant"
 
 		db.vm.provider "virtualbox" do |vb|
 			vb.name = "dj-database"
@@ -24,6 +25,7 @@ Vagrant.configure("2") do |config|
 		web.vm.box = "ubuntu/trusty64"
 		web.vm.network "forwarded_port", guest: 8000, host: 8000
 		web.vm.network "private_network", ip: "​ 192.168.1.10"
+		web.vm.synced_folder ".", "/vagrant"
 
 		web.vm.provider "virtualbox" do |vb|
 			vb.name = "dj"
@@ -31,7 +33,7 @@ Vagrant.configure("2") do |config|
 			vb.gui = false
 		end
 
-		web.vm.provision "shell", inline <<-SHELL
+		web.vm.provision "shell", inline: <<-SHELL
 			sudo apt-get install -y python-pip python-dev libpq-dev postgresql postgresql-contrib
 			sudo pip install django flake8 psycopg2
 		SHELL
